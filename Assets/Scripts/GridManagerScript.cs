@@ -8,9 +8,23 @@ public class GridManagerScript : MonoBehaviour
     [SerializeField] private Tile _tileprefab;
 
     [SerializeField] private Transform _camera;
+    ObjectManagerScript ObjectManager;
     private void Start()
     {
         GenerateGrid(16, 9);
+    }
+
+    private void Update()
+    {
+        ////for later to change tile color when placing objects
+        //if (ObjectManager.PlacementMode == true)
+        //{
+        //    var tiles = Object.FindObjectsByType<Tile>(FindObjectsSortMode.None);
+        //    foreach (var changeTile in tiles)
+        //    {
+
+        //    }
+        //}
     }
 
     public void GenerateGrid(int _width, int _height)
@@ -29,9 +43,9 @@ public class GridManagerScript : MonoBehaviour
     public void DeleteGrid()
     {
         var tiles = Object.FindObjectsByType<Tile>(FindObjectsSortMode.None);
-        foreach (var tile in tiles)
+        foreach (var deleteTile in tiles)
             {
-                Destroy(tile.gameObject);
+                Destroy(deleteTile.gameObject);
         }
     }
 }

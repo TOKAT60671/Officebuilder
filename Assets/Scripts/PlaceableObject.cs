@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,17 +8,13 @@ public class PlaceableObject : MonoBehaviour
     public Transform trans;
     public string Rotation;
 
-    private bool isDragging = false;
-
-    public void StartDragging()
-    {
-        isDragging = true;
-    }
+    public bool isDragging = false;
 
     public void Update()
     {
         if (isDragging)
-            trans.position = GetMousePosition();
+            trans.position = new Vector3(Mathf.Round(GetMousePosition().x), Mathf.Round(GetMousePosition().y), 0);
+       
         if (Rotation == "Front")
         {
             GetComponent<SpriteRenderer>().sprite = _frontSpr;
@@ -58,7 +55,7 @@ public class PlaceableObject : MonoBehaviour
 
         if (!isDragging)
         {
-            Debug.Log($"Stopped dragging at {GetMousePosition()}");
+            Debug.Log("stopped dragging");  
         }
     }
 
