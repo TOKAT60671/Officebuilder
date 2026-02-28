@@ -18,3 +18,9 @@ public class LoginRegisterManagerScript : MonoBehaviour
         FindFirstObjectByType<DisplayManagerScript>().ToLogin();
     }
 }
+/*
+{
+  "email": "Test@Email.com",
+  "password": "AbsoluteTesting123!"
+}
+*/

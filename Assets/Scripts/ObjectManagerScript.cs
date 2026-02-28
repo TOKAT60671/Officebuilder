@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class ObjectManagerScript : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    public bool IsPlaying = true;
-    public bool PlacementMode = false;
+    GridManagerScript GridManager;
+    DisplayManagerScript DisplayManager;
+
     [SerializeField] PlaceableObject Desk; //0
     [SerializeField] PlaceableObject BlackLaptop; //1
     [SerializeField] PlaceableObject WhiteLaptop; //2
@@ -16,16 +17,16 @@ public class ObjectManagerScript : MonoBehaviour
     {
         foreach (APIObject obj in objects)
         {
-            switch(obj.type)
+            switch(obj.Type)
             {
                 case 0:
-                    PlaceObjectFromAPI(Desk, obj.rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
+                    PlaceObjectFromAPI(Desk, obj.Rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
                     break;
                 case 1:
-                    PlaceObjectFromAPI(BlackLaptop, obj.rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
+                    PlaceObjectFromAPI(BlackLaptop, obj.Rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
                     break;
                 case 2:
-                    PlaceObjectFromAPI(WhiteLaptop, obj.rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
+                    PlaceObjectFromAPI(WhiteLaptop, obj.Rotation, new Vector3((float)obj.LocationX, (float)obj.LocationY));
                     break;
             }
         }
@@ -41,6 +42,19 @@ public class ObjectManagerScript : MonoBehaviour
         var Object = Instantiate(prefab);
         Object.isDragging = true;
         Object.Rotation = "Front";
-        PlacementMode = true;
+    }
+    public void LoadGame()
+    {
+        
+    }
+    public void UnloadGame()
+    {
+        GridManager.DeleteGrid();
+        var deleteableObjects = Object.FindObjectsByType<PlaceableObject>(FindObjectsSortMode.None);
+        foreach (var deleteObject in deleteableObjects)
+        {
+            Destroy(deleteObject.gameObject);
+        }
+        DisplayManager.ToSaveList();
     }
 }
