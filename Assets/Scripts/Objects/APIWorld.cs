@@ -8,5 +8,6 @@ public class APIWorld
     public string Name { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
-    public Guid UserId { get; set; }
+    public int SaveSlotIndex { get; set; }
+    public string UserId { get; set; }
 }

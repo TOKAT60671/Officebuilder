@@ -1,26 +1,28 @@
-using Newtonsoft.Json;
 using System;
-using System.IO.Compression;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SaveSlot : MonoBehaviour
 {
-    public GameObject MakeWorldPanel;
-    public GameObject LoadWoldPanel;
-    public GameObject NewWorldButton;
-    public GameObject SizeWorldPanel;
-    public int SlotIndex; // 1 to 5
-    TMP_InputField WorldNameField;
-    TMP_Text WorldNameText;
-    TMP_InputField WorldWidthField;
-    TMP_InputField WorldHeightField;
+    [SerializeField] GameObject MakeWorldPanel;
+    [SerializeField] GameObject LoadWoldPanel;
+    [SerializeField] GameObject NewWorldButton;
+    [SerializeField] GameObject SizeWorldPanel;
+    [SerializeField] int SlotIndex; // 1 to 5
+    [SerializeField] TMP_InputField WorldNameField;
+    [SerializeField] TMP_Text WorldNameText;
+    [SerializeField] TMP_InputField WorldWidthField;
+    [SerializeField] TMP_InputField WorldHeightField;
 
-    DisplayManagerScript DisplayManager;
-    WebClient webClient;
+    public APIWorld currentWorld;
+
+    public DisplayManagerScript DisplayManager;
+    public ObjectManager ObjectManager;
+    public APIClient APIClient;
+    public SaveList SaveList;
 
 
     public void NewWorld()
@@ -28,21 +30,49 @@ public class SaveSlot : MonoBehaviour
         NewWorldButton.SetActive(false);
         MakeWorldPanel.SetActive(true);
     }
-    public void ConfirmWorld()
+    public async void ConfirmWorld()
     {
         //H=10-100 W=20-200
-        if (Regex.IsMatch(WorldWidthField.text, @"^([2-9][0-9]|1[0-9]{2}|200)$") && Regex.IsMatch(WorldHeightField.text, @"^([1-9][0-9]|100)$"))
+        if (Regex.IsMatch(WorldWidthField.text, @"^([2-9][0-9]|1[0-9]{2}|200)$"))
         {
-            new APIWorld(WorldNameField.text, int.Parse(WorldWidthField.text), int.Parse(WorldHeightField.text ));
+            if (Regex.IsMatch(WorldHeightField.text, @"^([1-9][0-9]|100)$"))
+            {
+                APIWorld world = new APIWorld{Id = Guid.NewGuid(), Name = WorldNameField.text, Width = int.Parse(WorldWidthField.text), Height = int.Parse(WorldHeightField.text), SaveSlotIndex = SlotIndex, UserId = ""};
+                IWebRequestReponse webRequestResponse = await APIClient.CreateWorld(world);
+                switch (webRequestResponse)
+                {
+                    case WebRequestData<string> dataResponse:
+                        Debug.Log("World Created SuccesFully");
+                        SizeWorldPanel.SetActive(false);
+                        LoadWoldPanel.SetActive(true);
+                        SaveList.UpdateSaveList();
+                        break;
+                    case WebRequestError errorResponse:
+                        string errorMessage = errorResponse.ErrorMessage;
+                        Debug.Log("Save creation error: " + errorMessage);
+                        DisplayManager.OpenErrorMessage(errorMessage);
+                        break;
+                    default:
+                        throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
+                }
+            }
+            else
+            {
+                DisplayManager.OpenErrorMessage("World height must be between 10 and 100");
+            }
         }
-        
+        else
+        {
+            DisplayManager.OpenErrorMessage("World width must be between 20 and 200");
+        }
+
 
     }
     public void ConfirmName()
     {
         if (WorldNameField.text.Count() > 25)
         {
-            DisplayManager.OpenErrorMessage("World name must be less than 20 characters");
+            DisplayManager.OpenErrorMessage("World name must be less than 25 characters");
         }
         else if (WorldNameField.text.Count() < 1)
         {
@@ -66,23 +96,37 @@ public class SaveSlot : MonoBehaviour
         MakeWorldPanel.SetActive(false);
         NewWorldButton.SetActive(true);
     }
-    public void DeleteWorld()
+    public async void DeleteWorld()
     {
-        LoadWoldPanel.SetActive(false);
-        NewWorldButton.SetActive(true);
-    }
-    public void LoadWorld()
-    {
-        
-    }
+        IWebRequestReponse webRequestResponse = await APIClient.DeleteWorld(currentWorld.Id);
+        switch (webRequestResponse)
+        {
+            case WebRequestData<string> dataResponse:
+                Debug.Log("World Deleted SuccesFully");
+                LoadWoldPanel.SetActive(false);
+                NewWorldButton.SetActive(true);
+                SaveList.UpdateSaveList();
+                break;
+            case WebRequestError errorResponse:
+                string errorMessage = errorResponse.ErrorMessage;
+                Debug.Log("Save deletion error: " + errorMessage);
+                DisplayManager.OpenErrorMessage(errorMessage);
+                break;
+            default:
+                throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
+        }
 
-    // API part
-    public async Awaitable<IWebRequestReponse> CreateEnvironment(APIWorld world)
+    }
+    public async void LoadWorld()
     {
-        string route = "/environments";
-        string data = JsonConvert.SerializeObject(environment, JsonHelper.CamelCaseSettings);
-
-        IWebRequestReponse webRequestResponse = await webClient.SendPostRequest(route, data);
-        return ParseEnvironment2DResponse(webRequestResponse);
+        ObjectManager.currentWorld = currentWorld;
+        await ObjectManager.LoadGame(currentWorld);
+    }
+    public void SetCurrentWorld(APIWorld world)
+    {
+        currentWorld = world;
+        WorldNameText.text = world.Name;
+        LoadWoldPanel.SetActive(true);
+        NewWorldButton.SetActive(false);
     }
 }

@@ -8,12 +8,12 @@ public class GridManagerScript : MonoBehaviour
     [SerializeField] private Tile _tileprefab;
 
     [SerializeField] private Transform _camera;
-    GameManager GameManager;
+    ObjectManager ObjectManager;
 
     private void Update()
     {
         ////for later to change tile color when placing objects
-        //if (GameManager.PlacementMode == true)
+        //if (ObjectManager.PlacementMode == true)
         //{
         //    var tiles = Object.FindObjectsByType<Tile>(FindObjectsSortMode.None);
         //    foreach (var changeTile in tiles)

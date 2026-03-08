@@ -9,4 +9,5 @@ public class APIObject
     public double LocationX { get; set; }
     public double LocationY { get; set; }
     public string Rotation { get; set; }
+    public Guid WorldId { get; set; }
 }

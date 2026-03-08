@@ -11,6 +11,9 @@ public class DisplayManagerScript : MonoBehaviour
     public GameObject PauseMenu;
     public GameObject ErrorPanel;
     [SerializeField] private TMP_Text ErrorPanelText;
+
+    public SaveList SaveList;
+
     public void clearScreen()
     {
         loginPanel.SetActive(false);
@@ -34,7 +37,7 @@ public class DisplayManagerScript : MonoBehaviour
         clearScreen();
         GameUIPanel.SetActive(true);
     }
-    public void ENablePauseMenu()
+    public void EnablePauseMenu()
     {
         clearScreen();
         PauseMenu.SetActive(true);
@@ -44,6 +47,7 @@ public class DisplayManagerScript : MonoBehaviour
     {
         clearScreen();
         SaveListPanel.SetActive(true);
+        SaveList.UpdateSaveList();
     }
     public void OpenErrorMessage(string Message)
     {

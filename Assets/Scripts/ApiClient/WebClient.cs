@@ -44,10 +44,18 @@ public class WebClient : MonoBehaviour
 
         data = RemoveIdFromJson(data); // Backend throws error if it receiving empty strings as a GUID value.
         var webRequest = new UnityWebRequest(url, type);
-        byte[] dataInBytes = new UTF8Encoding().GetBytes(data);
-        webRequest.uploadHandler = new UploadHandlerRaw(dataInBytes);
         webRequest.downloadHandler = new DownloadHandlerBuffer();
-        webRequest.SetRequestHeader("Content-Type", "application/json");
+
+        // Do not attach an upload handler or a request body for GET/DELETE requests
+        // because many servers (including some ASP.NET configurations) reject
+        // GET requests that contain a body and respond with 405 Method Not Allowed.
+        if (!string.IsNullOrEmpty(data) && (type == "POST" || type == "PUT"))
+        {
+            byte[] dataInBytes = new UTF8Encoding().GetBytes(data);
+            webRequest.uploadHandler = new UploadHandlerRaw(dataInBytes);
+            webRequest.SetRequestHeader("Content-Type", "application/json");
+        }
+
         AddToken(webRequest);
         return webRequest;
     }

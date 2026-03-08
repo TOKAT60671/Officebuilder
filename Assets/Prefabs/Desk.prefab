@@ -111,6 +111,7 @@ MonoBehaviour:
   _rightSpr: {fileID: 1951767290, guid: 697ed579d5de6ff42a6ec293050c44b1, type: 3}
   trans: {fileID: 7185187909452259466}
   Rotation: Front
+  ObjectType: 0
   isDragging: 0
 --- !u!61 &-6024571227161041330
 BoxCollider2D:
@@ -156,5 +157,5 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.0666667, y: 0.43333334}
+  m_Size: {x: 1, y: 0.5}
   m_EdgeRadius: 0
