@@ -29,7 +29,9 @@ public class LoginRegisterManagerScript : MonoBehaviour
                     DisplayManager.OpenErrorMessage("Email of wachtwoord is incorrect");
                 }
                 else
+                {
                     DisplayManager.OpenErrorMessage(errorMessage);
+                }
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
@@ -50,10 +52,13 @@ public class LoginRegisterManagerScript : MonoBehaviour
                 string errorMessage = errorResponse.ErrorMessage;
                 if (errorMessage == "HTTP/1.1 400 Bad Request")
                 {
-                    Debug.Log("Email of wachtwoord voldoet niet aan de eisen");
+                    DisplayManager.OpenErrorMessage("Email of wachtwoord voldoet niet aan de eisen");
+                }
+                else
+                {
+                    DisplayManager.OpenErrorMessage(errorMessage);
                 }
                 Debug.Log("Register error: " + errorMessage);
-                DisplayManager.OpenErrorMessage(errorMessage);
                 break;
             default:
                 throw new NotImplementedException("No implementation for webRequestResponse of class: " + webRequestResponse.GetType());
